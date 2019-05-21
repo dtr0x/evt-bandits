@@ -1,6 +1,5 @@
 import numpy as np
-
-#import torch
+import torch
 from scipy.stats import genpareto, lognorm, norm
 from scipy.interpolate import interp1d
 
@@ -8,32 +7,25 @@ ad_quantiles = np.loadtxt("ADQuantiles.csv", delimiter = ",", dtype = float, ski
 ad_pvals = np.round(np.linspace(0.999, 0.001, 1000), 3) #col names
 ad_shape = np.round(np.linspace(-0.5, 1, 151), 2) #row names
 
-#exec(open("tce.py").read())
-shape = 0.5
-loc = 0
-scale = 1
-n = 10000
-np.random.seed(7)
-x = genpareto.rvs(shape, loc, scale, n)
-
 def tce_sa(x, alph):
 	q = np.quantile(x, alph)
 	y = x[x >= q]
 
 	return np.mean(y)
 
-def tce_ev(x, alph, tp = 0.95, cutoff = 0.99):
+def tce_ev_params(alph, u, scale, shape, tp):
+	q = u + scale/shape*((1-(alph-tp)/(1-tp))**(-shape) - 1)
+	return q + (scale + shape*(q - u))/(1 - shape)
+
+def tce_ev(x, alph, tp = 0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
-    fit = genpareto.fit(y)
-    shape, scale = fit[0], fit[2]
+    shape, loc, scale = genpareto.fit(y)
 
-    if shape > cutoff:
-        return None
-
-    q = u + scale/shape*((1-(alph-tp)/(1-tp))**(-shape) - 1)
-
-    return q + (scale + shape*(q - u))/(1 - shape)
+    if shape > 1:
+        return np.nan
+    else:
+        return tce_ev_params(alph, u, scale, shape, tp)    
 
 def tce_gpd(alph, shape, scale = 1):
 	pass
@@ -66,7 +58,7 @@ def ad_pvalue(stat, shape):
     if stat > ad_quantiles[row, -1]:
     	xdat = ad_quantiles[row, 950:999]
     	ydat = -np.log(ad_pvals[950:999])
-    	lfit = np.polyfit(x_dat, y_dat, 1)
+    	lfit = np.polyfit(xdat, ydat, 1)
     	m = lfit[0]
     	b = lfit[1]
     	p = np.exp(-(m*stat+b))
@@ -85,25 +77,60 @@ def ad_pvalue(stat, shape):
 
     return p
 
-def tce_ad(x, alph, tp_init = 0.9, tp_num = 20):
+def tce_ad(x, alph, tp_init = 0.9, tp_num = 100, signif = 0.2):
     tps = np.linspace(tp_init, alph, tp_num)
+    tps_valid = []
     ad_tests = []
     pvals = []
     for tp in tps:
     	stat, shape, scale = gpd_ad(x, tp)
-    	pvals.append(ad_pvalue(stat, shape))
-    	ad_tests.append([stat, shape, scale])
+    	if shape < 1:
+    	    ad_tests.append([tp, shape, scale])
+    	    pvals.append(ad_pvalue(stat, shape))
+    
+    if(len(ad_tests) == 0):
+        return np.nan
+
     ad_tests = np.asarray(ad_tests)
     pvals = np.asarray(pvals)
 
     kf = []
     for i in range(1, len(pvals)):
     	kf.append(-np.mean(np.log1p(-pvals[:i])))
+    kf = np.asarray(kf)
+    if np.where(kf <= signif)[0].size == 0:
+        tp = ad_tests[0, 0]
+        u = np.quantile(x, tp)
+        shape = ad_tests[0, 1]
+        scale = ad_tests[0, 2]
+        return tce_ev_params(alph, u, scale, shape, tp)
+    else:
+    	stop = max(np.where(kf <= signif)[0])
 
-    return kf
+    tp = ad_tests[stop, 0]
+    u = np.quantile(x, tp)
+    shape = ad_tests[stop, 1]
+    scale = ad_tests[stop, 2]
+    return tce_ev_params(alph, u, scale, shape, tp)
 
+#exec(open("tce.py").read())
+#shape = 0.5
+#loc = 0
+#scale = 1
+#n = 10000
+#np.random.seed(7)
+#x = genpareto.rvs(shape, loc, scale, n)
 
+#tce_sa_dat = []
+#tce_ev_dat = []
+#tce_ad_dat = []
 
+#print(tce_lnorm(0.99, 0, 3))
+#for i in range(1, 100):
+    #x = lognorm.rvs(3, 0, 1, 5000)
+    #tce_sa_dat.append(tce_sa(x, 0.99))
+    #tce_ev_dat.append(tce_ev(x, 0.99))
+    #tce_ad_dat.append(tce_ad(x, 0.99))
 
 
 
