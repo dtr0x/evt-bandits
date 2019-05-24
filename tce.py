@@ -20,7 +20,7 @@ def tce_ev_params(alph, u, scale, shape, tp):
 def tce_ev(x, alph, tp = 0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
-    shape, loc, scale = genpareto.fit(y)
+    shape, loc, scale = genpareto.fit(y, floc=0)
 
     if shape > 1:
         return np.nan
@@ -28,7 +28,8 @@ def tce_ev(x, alph, tp = 0.95):
         return tce_ev_params(alph, u, scale, shape, tp)    
 
 def tce_gpd(alph, shape, scale = 1):
-	pass
+    q = genpareto.ppf(alph, shape, loc=0, scale=scale)
+    return (q+scale)*(1+shape*q/scale)**(-1/shape)/((1-alph)*(1-shape))
 
 def tce_lnorm(alph, mu = 0, sigm = 1):
 	q = lognorm.ppf(alph, sigm, mu, 1)
@@ -43,10 +44,11 @@ def tce_weibull(alph, shape, scale = 1):
 def gpd_ad(x, tp = 0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
-    shape, loc, scale = genpareto.fit(y)
-    z = genpareto.cdf(y, shape, loc, scale)
+    shape, loc, scale = genpareto.fit(y, floc=0)
+    z = genpareto.cdf(y, shape, loc=0, scale=scale)
     z = np.sort(z)
     n = len(z)
+    print(z)
     i = np.linspace(1, n, n)
     stat = -n - (1/n) * np.sum((2 * i - 1) * (np.log(z) + np.log1p(-z[::-1])))
 
@@ -112,32 +114,3 @@ def tce_ad(x, alph, tp_init = 0.9, tp_num = 100, signif = 0.2):
     shape = ad_tests[stop, 1]
     scale = ad_tests[stop, 2]
     return tce_ev_params(alph, u, scale, shape, tp)
-
-#exec(open("tce.py").read())
-#shape = 0.5
-#loc = 0
-#scale = 1
-#n = 10000
-#np.random.seed(7)
-#x = genpareto.rvs(shape, loc, scale, n)
-
-#tce_sa_dat = []
-#tce_ev_dat = []
-#tce_ad_dat = []
-
-#print(tce_lnorm(0.99, 0, 3))
-#for i in range(1, 100):
-    #x = lognorm.rvs(3, 0, 1, 5000)
-    #tce_sa_dat.append(tce_sa(x, 0.99))
-    #tce_ev_dat.append(tce_ev(x, 0.99))
-    #tce_ad_dat.append(tce_ad(x, 0.99))
-
-
-
-
-
-
-
-
-
-
