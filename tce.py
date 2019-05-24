@@ -48,7 +48,6 @@ def gpd_ad(x, tp = 0.95):
     z = genpareto.cdf(y, shape, loc=0, scale=scale)
     z = np.sort(z)
     n = len(z)
-    print(z)
     i = np.linspace(1, n, n)
     stat = -n - (1/n) * np.sum((2 * i - 1) * (np.log(z) + np.log1p(-z[::-1])))
 
@@ -79,7 +78,7 @@ def ad_pvalue(stat, shape):
 
     return p
 
-def tce_ad(x, alph, tp_init = 0.9, tp_num = 100, signif = 0.2):
+def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.2):
     tps = np.linspace(tp_init, alph, tp_num)
     tps_valid = []
     ad_tests = []
