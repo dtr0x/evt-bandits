@@ -1,8 +1,6 @@
+from tce import *
 import multiprocessing as mp
 import os
-import tce
-
-#ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK",default=1))
 
 def tce_sim(x, alph, tce_func, start=99, step=100):
 	tce_dat = []
@@ -10,10 +8,21 @@ def tce_sim(x, alph, tce_func, start=99, step=100):
 		tce_dat.append(tce_func(x[:i], alph))
 	return tce_dat
 
+def main():
+    task_id = os.environ.get("SLURM_ARRAY_TASK_ID", default=0)
+    ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=1))
+    data = lognorm.rvs(2, 0, 1, ncpus*10000).reshape(ncpus, 10000)
+    pool = mp.Pool(processes=ncpus)
 
-ncpus = 1000
-pool = mp.Pool(processes=ncpus)
-data = genpareto.rvs(0.5, 0, 1, 10*10000).reshape(1000, 10000)
-results = [pool.apply_async(tce_sim, args=(x, 0.99, tce_sa)) for x in data]
-vals = np.asarray([p.get() for p in results])
-print(vals)
+    # SA data
+    results = [pool.apply_async(tce_sim, args=(x, 0.99, tce_sa)) for x in data]
+    vals = np.asarray([p.get() for p in results])
+    np.save(os.path.join("data", "sa", task_id), vals)
+
+    # EVT data
+    results = [pool.apply_async(tce_sim, args=(x, 0.99, tce_ev)) for x in data]
+    vals = np.asarray([p.get() for p in results])
+    np.save(os.path.join("data", "ev", task_id), vals)
+
+if __name__ == "__main__":
+    main() 

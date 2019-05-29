@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 from scipy.stats import genpareto, lognorm, norm
 from scipy.interpolate import interp1d
 
@@ -113,3 +112,4 @@ def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.2):
     shape = ad_tests[stop, 1]
     scale = ad_tests[stop, 2]
     return tce_ev_params(alph, u, scale, shape, tp)
+    
