@@ -5,7 +5,7 @@ ENVDIR=/tmp/$RANDOM
 virtualenv --no-download $ENVDIR
 source $ENVDIR/bin/activate
 pip install --upgrade pip
-pip install --no-index numpy scipy
+pip install --no-index numpy scipy matplotlib
 pip freeze > requirements.txt
 deactivate
 rm -rf $ENVDIR

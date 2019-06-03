@@ -77,7 +77,7 @@ def ad_pvalue(stat, shape):
 
     return p
 
-def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.2):
+def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.25):
     tps = np.linspace(tp_init, alph, tp_num)
     tps_valid = []
     ad_tests = []
