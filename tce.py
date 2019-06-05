@@ -12,7 +12,7 @@ def tce_sa(x, alph):
 
 	return np.mean(y)
 
-def tce_ev_params(alph, u, scale, shape, tp):
+def tce_ev_params(alph, u, shape, scale, tp):
 	q = u + scale/shape*((1-(alph-tp)/(1-tp))**(-shape) - 1)
 	return q + (scale + shape*(q - u))/(1 - shape)
 
@@ -24,7 +24,7 @@ def tce_ev(x, alph, tp = 0.95):
     if shape > 1:
         return np.nan
     else:
-        return tce_ev_params(alph, u, scale, shape, tp)    
+        return tce_ev_params(alph, u, shape, scale, tp)    
 
 def tce_gpd(alph, shape, scale = 1):
     q = genpareto.ppf(alph, shape, loc=0, scale=scale)
@@ -77,9 +77,8 @@ def ad_pvalue(stat, shape):
 
     return p
 
-def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.25):
+def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.2):
     tps = np.linspace(tp_init, alph, tp_num)
-    tps_valid = []
     ad_tests = []
     pvals = []
     for tp in tps:
@@ -98,18 +97,16 @@ def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.25):
     for i in range(1, len(pvals)):
     	kf.append(-np.mean(np.log1p(-pvals[:i])))
     kf = np.asarray(kf)
-    if np.where(kf <= signif)[0].size == 0:
-        tp = ad_tests[0, 0]
-        u = np.quantile(x, tp)
-        shape = ad_tests[0, 1]
-        scale = ad_tests[0, 2]
-        return tce_ev_params(alph, u, scale, shape, tp)
+
+    kf_sig = np.where(kf[:-1] <= signif)[0]
+    if kf_sig.size == 0:
+        stop = -1
     else:
-    	stop = max(np.where(kf <= signif)[0])
+        stop = max(kf_sig) + 1
 
     tp = ad_tests[stop, 0]
     u = np.quantile(x, tp)
     shape = ad_tests[stop, 1]
     scale = ad_tests[stop, 2]
-    return tce_ev_params(alph, u, scale, shape, tp)
+    return tce_ev_params(alph, u, shape, scale, tp)
     

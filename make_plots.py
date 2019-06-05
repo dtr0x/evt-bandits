@@ -42,9 +42,11 @@ if __name__ == "__main__":
     sa_rmse = rmse(sa_data, true_val)
     ev_rmse = rmse(ev_data, true_val)
 
-    plt.plot(sa_rmse)
-    plt.plot(ev_rmse)
-    plt.xlabel("Sample Size (x10^2)")
+    x_vals = range(100, 10001, 100)
+
+    plt.plot(x_vals, sa_rmse)
+    plt.plot(x_vals, ev_rmse)
+    plt.xlabel("Sample Size (1e2)")
     plt.ylabel("RMSE of TCE("+params[3]+")")
     plt.title(dirname)
     plt.legend(labels = ["Sample Average", "Extreme Value"])

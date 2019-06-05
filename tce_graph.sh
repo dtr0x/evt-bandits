@@ -10,8 +10,9 @@ do
         p1) p1=$v ;;
         p2) p2=$v ;;
         alph) alph=$v ;;
-        tp) tp=$v ;;
         tp_select) tp_select=$v ;;
+        tp) tp=$v ;;
+        tp_init) tp_init=$v ;;
         tp_num) tp_num=$v ;;
         signif) signif=$v ;;
         *)   
@@ -21,7 +22,7 @@ done
 if [ "$tp_select" == "fixed" ]; then
     dirname="${dist}_${p1}_${p2}_${alph}_${tp_select}_${tp}"
 elif [ "$tp_select" == "search" ]; then
-    dirname="${dist}_${p1}_${p2}_${alph}_${tp_select}_${tp}_${tp_num}_${signif}"
+    dirname="${dist}_${p1}_${p2}_${alph}_${tp_select}_${tp_init}_${tp_num}_${signif}"
 fi
 
 mkdir -p data/$dirname/sa data/$dirname/ev plots

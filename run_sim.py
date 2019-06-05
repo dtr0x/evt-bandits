@@ -29,10 +29,6 @@ def main():
     task_id = os.environ.get("SLURM_ARRAY_TASK_ID", default='0')
     ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=1))
 
-    print(tce_args)
-    print(task_id)
-    print(ncpus)
-
     if dist == "gpd":
         data = genpareto.rvs(float(p1), 0, float(p2), ncpus*10000).reshape(ncpus, 10000)
     elif dist == "lnorm":
