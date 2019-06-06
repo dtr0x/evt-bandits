@@ -16,7 +16,7 @@ def tce_ev_params(alph, u, shape, scale, tp):
 	q = u + scale/shape*((1-(alph-tp)/(1-tp))**(-shape) - 1)
 	return q + (scale + shape*(q - u))/(1 - shape)
 
-def tce_ev(x, alph, tp = 0.95):
+def tce_ev(x, alph, tp=0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
     shape, loc, scale = genpareto.fit(y, floc=0)
@@ -26,21 +26,21 @@ def tce_ev(x, alph, tp = 0.95):
     else:
         return tce_ev_params(alph, u, shape, scale, tp)    
 
-def tce_gpd(alph, shape, scale = 1):
+def tce_gpd(alph, shape, scale=1):
     q = genpareto.ppf(alph, shape, loc=0, scale=scale)
     return (q+scale)*(1+shape*q/scale)**(-1/shape)/((1-alph)*(1-shape))
 
-def tce_lnorm(alph, mu = 0, sigm = 1):
+def tce_lnorm(alph, mu=0, sigm=1):
 	q = lognorm.ppf(alph, sigm, mu, 1)
 	a = norm.cdf((mu+sigm**2-np.log(q))/sigm)
 	b = 1 - norm.cdf((np.log(q)-mu)/sigm)
 	return np.exp(mu + sigm**2/2) * a/b
 
 
-def tce_weibull(alph, shape, scale = 1):
+def tce_weibull(alph, shape, scale=1):
 	pass
 
-def gpd_ad(x, tp = 0.95):
+def gpd_ad(x, tp=0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
     shape, loc, scale = genpareto.fit(y, floc=0)
@@ -77,7 +77,38 @@ def ad_pvalue(stat, shape):
 
     return p
 
-def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.2):
+def forward_stop(pvals, signif):
+    kf = []
+    for i in range(1, len(pvals)):
+        kf.append(-np.mean(np.log1p(-pvals[:i])))
+    kf = np.asarray(kf)
+
+    kf_sig = np.where(kf[:-1] <= signif)[0]
+    if kf_sig.size == 0:
+        stop = -1
+    else:
+        stop = max(kf_sig) + 1
+    return stop
+
+def raw_up(pvals, signif):
+    pvals_idx = np.where(pvals <= signif)[0]
+    if pvals_idx.size == 0:
+        stop = -1
+    else:
+        stop = pvals_idx[0]
+    return stop
+
+def raw_down(pvals, signif):
+    pvals_idx = np.where(pvals > signif)[0]
+    if pvals_idx.size == 0:
+        stop = 0
+    else:
+        stop = pvals_idx[-1] + 1
+    if stop == pvals.size:
+        stop -= 1
+    return stop
+
+def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.2, stop_rule=forward_stop):
     tps = np.linspace(tp_init, alph, tp_num)
     ad_tests = []
     pvals = []
@@ -93,16 +124,7 @@ def tce_ad(x, alph, tp_init = 0.9, tp_num = 50, signif = 0.2):
     ad_tests = np.asarray(ad_tests)
     pvals = np.asarray(pvals)
 
-    kf = []
-    for i in range(1, len(pvals)):
-    	kf.append(-np.mean(np.log1p(-pvals[:i])))
-    kf = np.asarray(kf)
-
-    kf_sig = np.where(kf[:-1] <= signif)[0]
-    if kf_sig.size == 0:
-        stop = -1
-    else:
-        stop = max(kf_sig) + 1
+    stop = stop_rule(pvals, signif)
 
     tp = ad_tests[stop, 0]
     u = np.quantile(x, tp)
