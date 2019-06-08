@@ -4,7 +4,7 @@ import os, sys
 from tce import tce_gpd, tce_lnorm, tce_weibull
 
 def rmse(data, true_val):
-    f = lambda z: np.sqrt(np.mean((z - true_val)**2))
+    f = lambda z: np.sqrt(np.nanmean((z - true_val)**2))
     return np.apply_along_axis(f, 0, data)
 
 if __name__ == "__main__":
@@ -36,8 +36,8 @@ if __name__ == "__main__":
         arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
     ev_data = np.vstack(tuple(arrs))
 
-    nan_idx = np.where(np.isnan(ev_data))
-    ev_data[nan_idx] = sa_data[nan_idx]
+    #nan_idx = np.where(np.isnan(ev_data))
+    #ev_data[nan_idx] = sa_data[nan_idx]
 
     sa_rmse = rmse(sa_data, true_val)
     ev_rmse = rmse(ev_data, true_val)
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 
     plt.plot(x_vals, sa_rmse)
     plt.plot(x_vals, ev_rmse)
-    plt.xlabel("Sample Size (1e2)")
+    plt.xlabel("Sample Size")
     plt.ylabel("RMSE of TCE("+params[3]+")")
     plt.title(dirname)
     plt.legend(labels = ["Sample Average", "Extreme Value"])

@@ -1,5 +1,6 @@
 import numpy as np
-from scipy.stats import genpareto, lognorm, norm
+from scipy.stats import genpareto, lognorm, norm, gamma as pgamma, weibull_min
+from scipy.special import gamma
 from scipy.interpolate import interp1d
 
 ad_quantiles = np.loadtxt("ADQuantiles.csv", delimiter = ",", dtype = float, skiprows = 1, usecols = range(1,1000))
@@ -16,12 +17,12 @@ def tce_ev_params(alph, u, shape, scale, tp):
 	q = u + scale/shape*((1-(alph-tp)/(1-tp))**(-shape) - 1)
 	return q + (scale + shape*(q - u))/(1 - shape)
 
-def tce_ev(x, alph, tp=0.95):
+def tce_ev(x, alph, tp=0.95, cutoff=0.99):
     u = np.quantile(x, tp)
     y = x[x > u] - u
     shape, loc, scale = genpareto.fit(y, floc=0)
 
-    if shape > 1:
+    if shape > cutoff:
         return np.nan
     else:
         return tce_ev_params(alph, u, shape, scale, tp)    
@@ -36,15 +37,17 @@ def tce_lnorm(alph, mu=0, sigm=1):
 	b = 1 - norm.cdf((np.log(q)-mu)/sigm)
 	return np.exp(mu + sigm**2/2) * a/b
 
+def gamma_inc(a, x):
+    return pgamma.sf(x, a) * gamma(a)
 
 def tce_weibull(alph, shape, scale=1):
-	pass
+	return scale/(1-alph) * gamma_inc(1+1/shape, -np.log(1-alph))
 
 def gpd_ad(x, tp=0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
-    shape, loc, scale = genpareto.fit(y, floc=0)
-    z = genpareto.cdf(y, shape, loc=0, scale=scale)
+    shape, loc, scale = genpareto.fit(y)
+    z = genpareto.cdf(y, shape, loc, scale=scale)
     z = np.sort(z)
     n = len(z)
     i = np.linspace(1, n, n)
@@ -88,6 +91,7 @@ def forward_stop(pvals, signif):
         stop = -1
     else:
         stop = max(kf_sig) + 1
+
     return stop
 
 def raw_up(pvals, signif):
@@ -108,13 +112,13 @@ def raw_down(pvals, signif):
         stop -= 1
     return stop
 
-def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.2, stop_rule=forward_stop):
+def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.1, cutoff=0.99, stop_rule=forward_stop):
     tps = np.linspace(tp_init, alph, tp_num)
     ad_tests = []
     pvals = []
     for tp in tps:
     	stat, shape, scale = gpd_ad(x, tp)
-    	if shape < 1:
+    	if shape <= cutoff:
     	    ad_tests.append([tp, shape, scale])
     	    pvals.append(ad_pvalue(stat, shape))
     

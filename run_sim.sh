@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH --account=def-jiayuan
-#SBATCH --array=0-32
+#SBATCH --array=0-31
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
-#SBATCH --time=00:10:00
+#SBATCH --time=00:20:00
 
 #!/bin/bash
 
