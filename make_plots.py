@@ -36,8 +36,8 @@ if __name__ == "__main__":
         arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
     ev_data = np.vstack(tuple(arrs))
 
-    #nan_idx = np.where(np.isnan(ev_data))
-    #ev_data[nan_idx] = sa_data[nan_idx]
+    nan_idx = np.where(np.isnan(ev_data))
+    ev_data[nan_idx] = sa_data[nan_idx]
 
     sa_rmse = rmse(sa_data, true_val)
     ev_rmse = rmse(ev_data, true_val)

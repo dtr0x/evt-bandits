@@ -46,8 +46,8 @@ def tce_weibull(alph, shape, scale=1):
 def gpd_ad(x, tp=0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
-    shape, loc, scale = genpareto.fit(y)
-    z = genpareto.cdf(y, shape, loc, scale=scale)
+    shape, loc, scale = genpareto.fit(y, floc=0)
+    z = genpareto.cdf(y, shape, 0, scale)
     z = np.sort(z)
     n = len(z)
     i = np.linspace(1, n, n)
