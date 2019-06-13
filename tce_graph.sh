@@ -16,6 +16,7 @@ do
         tp_num) tp_num=$v ;;
         signif) signif=$v ;;
         cutoff) cutoff=$v ;;
+        stop_rule) stop_rule=$v ;;
         *)   
     esac    
 done
@@ -23,10 +24,11 @@ done
 if [ "$tp_select" == "fixed" ]; then
     dirname="${dist}_${p1}_${p2}_${alph}_${tp_select}_${tp}_${cutoff}"
 elif [ "$tp_select" == "search" ]; then
-    dirname="${dist}_${p1}_${p2}_${alph}_${tp_select}_${tp_init}_${tp_num}_${signif}_${cutoff}"
+    dirname="${dist}_${p1}_${p2}_${alph}_${tp_select}_${tp_init}_${tp_num}_${signif}_${cutoff}_${stop_rule}"
 fi
 
 mkdir -p data/$dirname/sa data/$dirname/ev plots
 
-job_ID=$(sbatch --output=/dev/null --parsable run_sim.sh $dirname)
-sbatch --output=/dev/null --depend=afterany:${job_ID} make_plots.sh $dirname
+job_ID=$(sbatch --parsable run_sim.sh $dirname)
+sbatch --depend=afterany:${job_ID} make_plots.sh $dirname
+#--output=/dev/null

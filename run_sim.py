@@ -25,15 +25,19 @@ def main(seed = 7):
             tce_args = {'tp_init': float(tce_args[0]), 'tp_num': int(tce_args[1]), 'signif': float(tce_args[2])}
         elif len(tce_args) == 4:
             tce_args = {'tp_init': float(tce_args[0]), 'tp_num': int(tce_args[1]), 'signif': float(tce_args[2]), 'cutoff': float(tce_args[3])}
+        elif len(tce_args) == 6:
+            stop_rule = globals()[tce_args[4] + '_' + tce_args[5]]
+            tce_args = {'tp_init': float(tce_args[0]), 'tp_num': int(tce_args[1]), 'signif': float(tce_args[2]), 'cutoff': float(tce_args[3]), 'stop_rule': stop_rule}
 
     task_id = os.environ.get("SLURM_ARRAY_TASK_ID", default='0')
     ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=1))
 
     np.random.seed(seed)
+
     if dist == "gpd":
         data = genpareto.rvs(float(p1), 0, float(p2), ncpus*10000).reshape(ncpus, 10000)
     elif dist == "lnorm":
-        data = lognorm.rvs(float(p2), float(p1), 1, ncpus*10000).reshape(ncpus, 10000)
+        data = lognorm.rvs(float(p2), 0, np.exp(float(p1)), ncpus*10000).reshape(ncpus, 10000)
     elif dist == "weibull":
         data = weibull_min.rvs(float(p1), 0, float(p2), ncpus*10000).reshape(ncpus, 10000)
 

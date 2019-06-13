@@ -32,7 +32,7 @@ def tce_gpd(alph, shape, scale=1):
     return (q+scale)*(1+shape*q/scale)**(-1/shape)/((1-alph)*(1-shape))
 
 def tce_lnorm(alph, mu=0, sigm=1):
-	q = lognorm.ppf(alph, sigm, mu, 1)
+	q = lognorm.ppf(alph, sigm, 0, np.exp(mu))
 	a = norm.cdf((mu+sigm**2-np.log(q))/sigm)
 	b = 1 - norm.cdf((np.log(q)-mu)/sigm)
 	return np.exp(mu + sigm**2/2) * a/b
