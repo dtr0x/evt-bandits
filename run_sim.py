@@ -8,7 +8,7 @@ def tce_sim(x, alph, tce_func, start=99, step=100, **kwargs):
         tce_dat.append(tce_func(x[:i], alph, **kwargs))
     return tce_dat
 
-def main(seed = 7):
+def main(seed = 0):
     dirname = sys.argv[1]
     params = dirname.split('_')
     dist, p1, p2, alph, tp_select = params[:5]
