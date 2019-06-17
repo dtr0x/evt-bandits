@@ -117,7 +117,7 @@ def tce_ad(x, alph, tp_init=0.9, tp_num=100, signif=0.1, cutoff=0.99, stop_rule=
     pvals = []
     for tp in tps:
         u, stat, shape, scale = gpd_ad(x, tp)
-    	if shape <= cutoff:
+        if shape <= cutoff:
             ad_tests.append([u, shape, scale, tp])
             pvals.append(ad_pvalue(stat, shape))
     

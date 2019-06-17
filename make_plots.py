@@ -8,7 +8,7 @@ def rmse(data, true_val):
     return np.apply_along_axis(f, 0, data)
 
 if __name__ == "__main__":
-    dirname = sys.argv[1]
+    dirname = "lnorm_0_2_0.999_search_0.97_100_0.15_0.99_forward_stop"#sys.argv[1]
     params = dirname.split('_')
     dist = params[0]
     p1 = float(params[1])
