@@ -46,14 +46,14 @@ def tce_weibull(alph, shape, scale=1):
 def gpd_ad(x, tp=0.95):
     u = np.quantile(x, tp)
     y = x[x > u] - u
-    shape, loc, scale = genpareto.fit(y, floc=0)
-    z = genpareto.cdf(y, shape, 0, scale)
+    shape, loc, scale = genpareto.fit(y)
+    z = genpareto.cdf(y, shape, loc, scale)
     z = np.sort(z)
     n = len(z)
     i = np.linspace(1, n, n)
     stat = -n - (1/n) * np.sum((2 * i - 1) * (np.log(z) + np.log1p(-z[::-1])))
 
-    return stat, shape, scale
+    return u, stat, shape, scale
 
 def ad_pvalue(stat, shape):
     row = np.where(ad_shape == max(round(shape, 2), -0.5))[0][0]
@@ -91,7 +91,6 @@ def forward_stop(pvals, signif):
         stop = -1
     else:
         stop = max(kf_sig) + 1
-
     return stop
 
 def raw_up(pvals, signif):
@@ -112,15 +111,15 @@ def raw_down(pvals, signif):
         stop -= 1
     return stop
 
-def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.1, cutoff=0.99, stop_rule=forward_stop):
-    tps = np.linspace(tp_init, alph, tp_num)
+def tce_ad(x, alph, tp_init=0.9, tp_num=100, signif=0.1, cutoff=0.99, stop_rule=forward_stop):
+    tps = np.linspace(tp_init, min(0.99, alph), tp_num)
     ad_tests = []
     pvals = []
     for tp in tps:
-    	stat, shape, scale = gpd_ad(x, tp)
+        u, stat, shape, scale = gpd_ad(x, tp)
     	if shape <= cutoff:
-    	    ad_tests.append([tp, shape, scale])
-    	    pvals.append(ad_pvalue(stat, shape))
+            ad_tests.append([u, shape, scale, tp])
+            pvals.append(ad_pvalue(stat, shape))
     
     if(len(ad_tests) == 0):
         return np.nan
@@ -129,10 +128,6 @@ def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.1, cutoff=0.99, stop_rule=f
     pvals = np.asarray(pvals)
 
     stop = stop_rule(pvals, signif)
-
-    tp = ad_tests[stop, 0]
-    u = np.quantile(x, tp)
-    shape = ad_tests[stop, 1]
-    scale = ad_tests[stop, 2]
+ 
+    u, shape, scale, tp = ad_tests[stop, ]
     return tce_ev_params(alph, u, shape, scale, tp)
-    

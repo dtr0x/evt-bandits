@@ -29,6 +29,5 @@ fi
 
 mkdir -p data/$dirname/sa data/$dirname/ev plots
 
-job_ID=$(sbatch --parsable run_sim.sh $dirname)
-sbatch --depend=afterany:${job_ID} make_plots.sh $dirname
-#--output=/dev/null
+job_ID=$(sbatch --output=/dev/null --parsable run_sim.sh $dirname)
+sbatch --output=/dev/null --depend=afterany:${job_ID} make_plots.sh $dirname
