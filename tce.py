@@ -81,20 +81,23 @@ def ad_pvalue(stat, shape):
     return p
 
 def forward_stop(pvals, signif):
-    kf = []
-    for i in range(1, len(pvals)):
-        kf.append(-np.mean(np.log1p(-pvals[:i])))
-    kf = np.asarray(kf)
+    pvals_transformed = []
+    for i in range(1, len(pvals)+1):
+        pvals_transformed.append(-np.mean(np.log1p(-pvals[:i])))
+    pvals_transformed = np.asarray(pvals_transformed)
 
-    kf_sig = np.where(kf[:-1] <= signif)[0]
-    if kf_sig.size == 0:
-        stop = -1
+    kf = np.where(pvals_transformed <= signif)[0]
+    if kf.size == 0:
+        stop = 0
     else:
-        stop = max(kf_sig) + 1
+        stop = max(kf) + 1
+    if stop == pvals.size:
+        stop -= 1
+    print(pvals_transformed)
     return stop
 
 def raw_up(pvals, signif):
-    pvals_idx = np.where(pvals <= signif)[0]
+    pvals_idx = np.where(pvals > signif)[0]
     if pvals_idx.size == 0:
         stop = -1
     else:
@@ -102,11 +105,11 @@ def raw_up(pvals, signif):
     return stop
 
 def raw_down(pvals, signif):
-    pvals_idx = np.where(pvals > signif)[0]
+    pvals_idx = np.where(pvals <= signif)[0]
     if pvals_idx.size == 0:
         stop = 0
     else:
-        stop = pvals_idx[-1] + 1
+        stop = max(pvals_idx) + 1
     if stop == pvals.size:
         stop -= 1
     return stop
