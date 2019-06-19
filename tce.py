@@ -93,7 +93,6 @@ def forward_stop(pvals, signif):
         stop = max(kf) + 1
     if stop == pvals.size:
         stop -= 1
-    print(pvals_transformed)
     return stop
 
 def raw_up(pvals, signif):
