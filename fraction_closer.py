@@ -3,9 +3,12 @@ import matplotlib.pyplot as plt
 import os, sys
 from tce import tce_gpd, tce_lnorm, tce_weibull
 
-def rmse(data, true_val):
-    f = lambda z: np.sqrt(np.mean((z - true_val)**2))
-    return np.apply_along_axis(f, 0, data)
+def fraction_closer(ev_data, sa_data, true_val):
+    ev_diff = np.abs(ev_data - true_val)
+    sa_diff = np.abs(sa_data - true_val)
+    ev_sa_diff = ev_diff - sa_diff
+    f = lambda z: np.where(z < 0)[0].size/np.where(z !=0)[0].size
+    return np.apply_along_axis(f, 0, ev_sa_diff)
 
 if __name__ == "__main__":
     dirname = sys.argv[1]
@@ -39,16 +42,13 @@ if __name__ == "__main__":
     nan_idx = np.where(np.isnan(ev_data))
     ev_data[nan_idx] = sa_data[nan_idx]
 
-    sa_rmse = rmse(sa_data, true_val)
-    ev_rmse = rmse(ev_data, true_val)
+    fc = fraction_closer(ev_data, sa_data, true_val)
 
     x_vals = range(100, 10001, 100)
 
-    plt.plot(x_vals, sa_rmse)
-    plt.plot(x_vals, ev_rmse)
+    plt.plot(x_vals, fc)
     plt.xlabel("Sample Size")
-    plt.ylabel("RMSE of TCE("+params[3]+")")
+    plt.ylabel("Fraction of times EVT closer for TCE("+params[3]+")")
     plt.title(dirname)
-    plt.legend(labels = ["Sample Average", "Extreme Value"])
-    plt.savefig(os.path.join("plots", dirname+".png"), bbox_inches="tight")
+    plt.savefig(os.path.join("plots/fraction_closer", dirname+".png"), bbox_inches="tight")
     plt.clf()
