@@ -8,7 +8,7 @@ def tce_sim(x, alph, tce_func, start=99, step=100, **kwargs):
         tce_dat.append(tce_func(x[:i], alph, **kwargs))
     return tce_dat
 
-def main(seed = 0):
+def main():
     dirname = sys.argv[1]
     params = dirname.split('_')
     dist, p1, p2, alph, tp_select = params[:5]
@@ -32,7 +32,7 @@ def main(seed = 0):
     task_id = os.environ.get("SLURM_ARRAY_TASK_ID", default='0')
     ncpus = int(os.environ.get("SLURM_CPUS_PER_TASK", default=1))
 
-    np.random.seed(seed)
+    np.random.seed(int(task_id))
 
     if dist == "gpd":
         data = genpareto.rvs(float(p1), 0, float(p2), ncpus*10000).reshape(ncpus, 10000)
