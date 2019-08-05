@@ -113,7 +113,7 @@ def raw_down(pvals, signif):
         stop -= 1
     return stop
 
-def tce_ad(x, alph, tp_init=0.9, tp_num=100, signif=0.1, cutoff=0.99, stop_rule=forward_stop):
+def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.1, cutoff=0.9, stop_rule=forward_stop):
     tps = np.linspace(tp_init, min(0.99, alph), tp_num)
     ad_tests = []
     pvals = []
