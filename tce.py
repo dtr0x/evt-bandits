@@ -118,13 +118,17 @@ def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.1, cutoff=0.9, stop_rule=fo
     ad_tests = []
     pvals = []
     for tp in tps:
-        u, stat, shape, scale = gpd_ad(x, tp)
-        if shape <= cutoff:
-            ad_tests.append([u, shape, scale, tp])
-            pvals.append(ad_pvalue(stat, shape))
+        try:
+            u, stat, shape, scale = gpd_ad(x, tp)
+            if shape <= cutoff:
+                ad_tests.append([u, shape, scale, tp])
+                pvals.append(ad_pvalue(stat, shape))
+        except ValueError:
+            pass
     
     if(len(ad_tests) == 0):
-        return np.nan
+        #return np.nan
+        return tce_sa(x, alph)
 
     ad_tests = np.asarray(ad_tests)
     pvals = np.asarray(pvals)
