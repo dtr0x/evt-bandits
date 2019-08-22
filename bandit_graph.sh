@@ -7,9 +7,9 @@ do
 
     case $k in
         dist) dist=$v ;;
-        narms) narms=$v ;;
         p_min) p_min=$v ;;
         p_max) p_max=$v ;;
+        narms) narms=$v ;;
         alph) alph=$v ;;
         *)   
     esac    
