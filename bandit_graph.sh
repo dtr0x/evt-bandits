@@ -19,5 +19,5 @@ dirname="${dist}_${p_min}_${p_max}_${narms}_${alph}"
 
 mkdir -p data/bandits/$dirname/sa data/bandits/$dirname/ev plots/bandits
 
-job_ID=$(sbatch --parsable n_arm_testbed.sh $dirname)
-sbatch --depend=afterany:${job_ID} bandit_plots.sh $dirname
+job_ID=$(sbatch --output=/dev/null --parsable n_arm_testbed.sh $dirname)
+sbatch --output=/dev/null --depend=afterany:${job_ID} bandit_plots.sh $dirname
