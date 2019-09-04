@@ -31,7 +31,7 @@ def tce_gpd(alph, shape, scale=1):
     q = genpareto.ppf(alph, shape, loc=0, scale=scale)
     return (q+scale)*(1+shape*q/scale)**(-1/shape)/((1-alph)*(1-shape))
 
-def tce_lnorm(alph, mu=0, sigm=1):
+def tce_lnorm(alph, sigm, mu=0):
 	q = lognorm.ppf(alph, sigm, 0, np.exp(mu))
 	a = norm.cdf((mu+sigm**2-np.log(q))/sigm)
 	b = 1 - norm.cdf((np.log(q)-mu)/sigm)
@@ -113,7 +113,7 @@ def raw_down(pvals, signif):
         stop -= 1
     return stop
 
-def tce_ad(x, alph, tp_init=0.9, tp_num=50, signif=0.1, cutoff=0.9, stop_rule=forward_stop):
+def tce_ad(x, alph, tp_init=0.9, tp_num=40, signif=0.1, cutoff=0.9, stop_rule=forward_stop):
     tps = np.linspace(tp_init, min(0.99, alph), tp_num)
     ad_tests = []
     pvals = []

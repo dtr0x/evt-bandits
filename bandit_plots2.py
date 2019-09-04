@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os, sys
+import matplotlib.ticker
 
-dirname = sys.argv[1]
+dirname = "lnorm_0.5_1_10_0.999"
 vals = np.load(os.path.join("data", "bandits", dirname, "tce.npy"))
 best_arm = np.argmin(vals)
 
@@ -25,14 +26,22 @@ if __name__ == "__main__":
         arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
     ev_data = np.vstack(tuple(arrs))
 
+    x_vals = range(0, 10001, 100)
+
     sa_pba = percent_best_action(sa_data, best_arm)
     ev_pba = percent_best_action(ev_data, best_arm)
 
-    plt.plot(sa_pba)
-    plt.plot(ev_pba)
+    fig, ax = plt.subplots()
+    plt.plot(x_vals, sa_pba, 'k-')
+    plt.plot(x_vals, ev_pba, 'k--')
     plt.xlabel("Sample Size")
     plt.ylabel("Percent Best Action")
-    plt.title(dirname)
+    #plt.title(dirname)
     plt.legend(labels = ["Sample Average", "Extreme Value"])
-    plt.savefig(os.path.join("plots", "bandits", dirname+".png"), bbox_inches="tight")
-    plt.clf()
+    #plt.yscale("log")
+    #ax.yaxis.set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    #plt.minorticks_off()
+    #plt.yticks([0.25, 0.5, 0.75, 1])
+    plt.show()
+    #plt.savefig(os.path.join("plots", "bandits", dirname+".png"), bbox_inches="tight")
+    #plt.clf()

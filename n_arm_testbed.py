@@ -1,6 +1,7 @@
 from tce import *
 import multiprocessing as mp
 import os, sys
+import time
 
 dirname = sys.argv[1]
 params = dirname.split('_')
@@ -27,18 +28,20 @@ elif dist == "weibull":
 np.save(os.path.join("data", "bandits", dirname, "tce"), trueTCEs)
 
 n_plays = 10000
-step = 100
-eps = np.concatenate((np.linspace(1, 0.1, 1000, endpoint=False), np.linspace(0.1, 0, 9001)))
+eps = np.concatenate((np.linspace(1, 0.1, 1000, endpoint=False), np.linspace(0.1, 0, 9000)))
 
 def bandit_one_run(x, tce_func):
-    armSelected = []
-    for i in range(0, n_plays+1, step):
+    armSelected = np.zeros(n_plays, dtype=int) # arm index selected at each play
+    nArmSamples = np.zeros(n_arms, dtype=int) # number of times each arm selected
+    armTCEs = np.zeros(n_arms) # TCE estimate for each arm
+    for i in range(n_plays):
         if np.random.uniform() <= eps[i]: # pick random arm
             arm = np.random.randint(n_arms)
         else:
-            armTCEs =  np.apply_along_axis(lambda z: tce_func(z, alph), 1, x[:, :i])
             arm  = np.argmin(armTCEs)
-        armSelected.append(arm)
+        armSelected[i] = arm
+        nArmSamples[arm] += 1
+        armTCEs[arm] =  tce_func(x[arm, :nArmSamples[arm]], alph)
     return armSelected
 
 task_id = os.environ.get("SLURM_ARRAY_TASK_ID", default='0')

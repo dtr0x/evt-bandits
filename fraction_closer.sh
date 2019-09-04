@@ -1,7 +1,8 @@
 #!/bin/bash
 
-for d in data/*; do
-	dirname=$(echo $d | cut -d '/' -f2)
-    python fraction_closer.py $dirname
-done
+dirname=$1
 
+mkdir -p fraction_closer/$dirname/sa fraction_closer/$dirname/ev fraction_closer/plots
+
+job_ID=$(sbatch --parsable fraction_closer_search.sh $dirname)
+sbatch --depend=afterany:${job_ID} fraction_closer_plots.sh $dirname
