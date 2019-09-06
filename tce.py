@@ -113,22 +113,28 @@ def raw_down(pvals, signif):
         stop -= 1
     return stop
 
-def tce_ad(x, alph, tp_init=0.9, tp_num=40, signif=0.1, cutoff=0.9, stop_rule=forward_stop):
+def tce_ad(x, alph, tp_init=0.9, tp_num=40, signif=0.1, cutoff=0.9, stop_rule=forward_stop, return_thresh=False):
     tps = np.linspace(tp_init, min(0.99, alph), tp_num)
     ad_tests = []
     pvals = []
+    n_rejected = 0
     for tp in tps:
         try:
             u, stat, shape, scale = gpd_ad(x, tp)
             if shape <= cutoff:
                 ad_tests.append([u, shape, scale, tp])
                 pvals.append(ad_pvalue(stat, shape))
+            else:
+                n_rejected += 1
         except ValueError:
             pass
     
-    if(len(ad_tests) == 0):
-        #return np.nan
-        return tce_sa(x, alph)
+    if len(ad_tests) == 0:
+        tce = tce_sa(x, alph)
+        if return_thresh:
+            return tce, 0.99, n_rejected
+        else:
+            return tce
 
     ad_tests = np.asarray(ad_tests)
     pvals = np.asarray(pvals)
@@ -136,4 +142,8 @@ def tce_ad(x, alph, tp_init=0.9, tp_num=40, signif=0.1, cutoff=0.9, stop_rule=fo
     stop = stop_rule(pvals, signif)
  
     u, shape, scale, tp = ad_tests[stop, ]
-    return tce_ev_params(alph, u, shape, scale, tp)
+    tce = tce_ev_params(alph, u, shape, scale, tp)
+    if return_thresh:
+        return tce, tp, n_rejected
+    else:
+        return tce

@@ -2,6 +2,7 @@
 
 #SBATCH --account=def-jiayuan
 #SBATCH --time=00:10:00
+#SBATCH --mem=2000MB
 
 dirname=$1
 

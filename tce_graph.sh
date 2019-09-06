@@ -27,7 +27,7 @@ elif [ "$tp_select" == "search" ]; then
     dirname="${dist}_${p1}_${p2}_${alph}_${tp_select}_${tp_init}_${tp_num}_${signif}_${cutoff}_${stop_rule}"
 fi
 
-mkdir -p data/$dirname/sa data/$dirname/ev plots
+mkdir -p data/$dirname/sa data/$dirname/ev data/$dirname/thresh data/$dirname/n_rejected plots
 
 job_ID=$(sbatch --output=/dev/null --parsable run_sim.sh $dirname)
 sbatch --output=/dev/null --depend=afterany:${job_ID} make_plots.sh $dirname

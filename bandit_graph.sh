@@ -11,16 +11,17 @@ do
         p_max) p_max=$v ;;
         narms) narms=$v ;;
         alph) alph=$v ;;
+        tp_init) tp_init=$v ;;
+        tp_num) tp_num=$v ;;
+        signif) signif=$v ;;
+        cutoff) cutoff=$v ;;
         *)   
     esac    
 done
 
-dirname="${dist}_${p_min}_${p_max}_${narms}_${alph}"
+dirname="${dist}_${p_min}_${p_max}_${narms}_${alph}_${tp_init}_${tp_num}_${signif}_${cutoff}"
 
 mkdir -p data/bandits/$dirname/sa data/bandits/$dirname/ev plots/bandits
 
-job_ID=$(sbatch --parsable n_arm_testbed.sh $dirname)
-sbatch --depend=afterany:${job_ID} bandit_plots.sh $dirname
-
-#job_ID=$(sbatch --output=/dev/null --parsable n_arm_testbed.sh $dirname)
-#sbatch --output=/dev/null --depend=afterany:${job_ID} bandit_plots.sh $dirname
+job_ID=$(sbatch --output=/dev/null --parsable n_arm_testbed.sh $dirname)
+sbatch --output=/dev/null --depend=afterany:${job_ID} bandit_plots.sh $dirname

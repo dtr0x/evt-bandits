@@ -40,8 +40,7 @@ if __name__ == "__main__":
     ev_data = np.vstack(tuple(arrs))
 
     fc = fraction_closer(ev_data, sa_data, true_val)
-
-    print(fc)
+    np.save(os.path.join("fraction_closer", dirname, "fc"), fc)
 
     x_vals = range(249, 2001, 250)
 

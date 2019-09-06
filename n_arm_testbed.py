@@ -11,6 +11,10 @@ p_min = float(params[1])
 p_max = float(params[2])
 n_arms = int(params[3])
 alph = float(params[4])
+tp_init = float(params[5])
+tp_num = int(params[6])
+signif = float(params[7])
+cutoff = float(params[8])
 arm_vals = np.linspace(p_min, p_max, n_arms)
 
 trueTCEs = []
@@ -27,21 +31,28 @@ elif dist == "weibull":
 
 np.save(os.path.join("data", "bandits", dirname, "tce"), trueTCEs)
 
-n_plays = 10000
-eps = np.concatenate((np.linspace(1, 0.1, 1000, endpoint=False), np.linspace(0.1, 0, 9000)))
+n_plays = 5000
 
 def bandit_one_run(x, tce_func):
+    np.random.seed()
     armSelected = np.zeros(n_plays, dtype=int) # arm index selected at each play
     nArmSamples = np.zeros(n_arms, dtype=int) # number of times each arm selected
     armTCEs = np.zeros(n_arms) # TCE estimate for each arm
     for i in range(n_plays):
-        if np.random.uniform() <= eps[i]: # pick random arm
+        if i < 1000:
+            eps = 1
+        else:
+            eps = 0.1
+        if np.random.uniform() <= eps: # pick random arm
             arm = np.random.randint(n_arms)
         else:
             arm  = np.argmin(armTCEs)
         armSelected[i] = arm
         nArmSamples[arm] += 1
-        armTCEs[arm] =  tce_func(x[arm, :nArmSamples[arm]], alph)
+        if tce_func == tce_ad:
+            armTCEs[arm] =  tce_func(x[arm, :nArmSamples[arm]], alph, tp_init, tp_num, signif, cutoff)
+        else:
+            armTCEs[arm] =  tce_func(x[arm, :nArmSamples[arm]], alph)
     return armSelected
 
 task_id = os.environ.get("SLURM_ARRAY_TASK_ID", default='0')

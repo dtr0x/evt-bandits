@@ -25,14 +25,15 @@ if __name__ == "__main__":
         arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
     ev_data = np.vstack(tuple(arrs))
 
-    sa_pba = percent_best_action(sa_data, best_arm)
-    ev_pba = percent_best_action(ev_data, best_arm)
+    x_vals = range(1000, 5000)
 
-    plt.plot(sa_pba)
-    plt.plot(ev_pba)
-    plt.xlabel("Sample Size")
+    sa_pba = percent_best_action(sa_data, best_arm)[1000:5000]
+    ev_pba = percent_best_action(ev_data, best_arm)[1000:5000]
+
+    plt.plot(x_vals, sa_pba, 'b')
+    plt.plot(x_vals, ev_pba, 'r')
+    plt.xlabel("Timestep")
     plt.ylabel("Percent Best Action")
-    plt.title(dirname)
     plt.legend(labels = ["Sample Average", "Extreme Value"])
     plt.savefig(os.path.join("plots", "bandits", dirname+".png"), bbox_inches="tight")
     plt.clf()

@@ -7,6 +7,13 @@ def rmse(data, true_val):
     f = lambda z: np.sqrt(np.mean((z - true_val)**2))
     return np.apply_along_axis(f, 0, data)
 
+def fraction_closer(ev_data, sa_data, true_val):
+    ev_diff = np.abs(ev_data - true_val)
+    sa_diff = np.abs(sa_data - true_val)
+    ev_sa_diff = ev_diff - sa_diff
+    f = lambda z: np.where(z < 0)[0].size/np.where(z !=0)[0].size
+    return np.apply_along_axis(f, 0, ev_sa_diff)
+
 if __name__ == "__main__":
     dirname = sys.argv[1]
     params = dirname.split('_')
@@ -36,19 +43,47 @@ if __name__ == "__main__":
         arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
     ev_data = np.vstack(tuple(arrs))
 
-    nan_idx = np.where(np.isnan(ev_data))
-    ev_data[nan_idx] = sa_data[nan_idx]
+    x_vals = range(100, 5001, 50)
 
+    # Plot RMSE
     sa_rmse = rmse(sa_data, true_val)
     ev_rmse = rmse(ev_data, true_val)
-
-    x_vals = range(100, 10001, 100)
-
-    plt.plot(x_vals, sa_rmse)
-    plt.plot(x_vals, ev_rmse)
+    plt.plot(x_vals, sa_rmse, 'b')
+    plt.plot(x_vals, ev_rmse, 'r')
     plt.xlabel("Sample Size")
-    plt.ylabel("RMSE of TCE("+params[3]+")")
-    plt.title(dirname)
+    plt.ylabel("RMSE")
     plt.legend(labels = ["Sample Average", "Extreme Value"])
-    plt.savefig(os.path.join("plots", dirname+".png"), bbox_inches="tight")
+    plt.savefig(os.path.join("plots", dirname+"_rmse.png"), bbox_inches="tight")
+    plt.clf()
+
+    # Plot Fraction Closer
+    fc = fraction_closer(ev_data, sa_data, true_val)
+    plt.plot(x_vals, fc, 'k-')
+    plt.xlabel("Sample Size")
+    plt.ylabel("Fraction Closer")
+    plt.savefig(os.path.join("plots", dirname+"_fc.png"), bbox_inches="tight")
+    plt.clf()
+
+    # Plot Average Threshold Percentile
+    arrs = []
+    data_path = os.path.join("data", dirname, "thresh")
+    for file in os.listdir(data_path):
+        arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
+    tp_data = np.vstack(tuple(arrs))
+    plt.plot(x_vals, np.mean(tp_data, axis=0), 'k-')
+    plt.xlabel("Sample Size")
+    plt.ylabel("Average Threshold Percentile")
+    plt.savefig(os.path.join("plots", dirname+"_tp.png"), bbox_inches="tight")
+    plt.clf()
+
+    # Plot Average Rejection Rate
+    arrs = []
+    data_path = os.path.join("data", dirname, "n_rejected")
+    for file in os.listdir(data_path):
+        arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
+    n_rejected = np.vstack(tuple(arrs))
+    plt.plot(x_vals, np.mean(n_rejected, axis=0)/40, 'k-')
+    plt.xlabel("Sample Size")
+    plt.ylabel("Average Rejection Rate")
+    plt.savefig(os.path.join("plots", dirname+"_nr.png"), bbox_inches="tight")
     plt.clf()
