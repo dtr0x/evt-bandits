@@ -25,13 +25,11 @@ if __name__ == "__main__":
         arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
     ev_data = np.vstack(tuple(arrs))
 
-    x_vals = range(1000, 5000)
+    sa_pba = percent_best_action(sa_data, best_arm)
+    ev_pba = percent_best_action(ev_data, best_arm)
 
-    sa_pba = percent_best_action(sa_data, best_arm)[1000:5000]
-    ev_pba = percent_best_action(ev_data, best_arm)[1000:5000]
-
-    plt.plot(x_vals, sa_pba, 'b')
-    plt.plot(x_vals, ev_pba, 'r')
+    plt.plot(sa_pba, 'b')
+    plt.plot(ev_pba, 'r')
     plt.xlabel("Timestep")
     plt.ylabel("Percent Best Action")
     plt.legend(labels = ["Sample Average", "Extreme Value"])

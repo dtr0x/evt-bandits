@@ -1,9 +1,12 @@
 #!/bin/bash
 #SBATCH --account=def-jiayuan
-#SBATCH --array=0-24
+#SBATCH --array=0-9
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=40
-#SBATCH --time=5:00:00
+#SBATCH --time=00:80:00
+#SBATCH --mail-user=dylantroop@gmail.com
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
 
 #!/bin/bash
 

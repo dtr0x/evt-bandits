@@ -3,6 +3,10 @@ import multiprocessing as mp
 import os, sys
 import time
 
+EPS_START = 1
+EPS_END = 0.05
+EPS_LEN = 2000
+
 dirname = sys.argv[1]
 params = dirname.split('_')
 
@@ -20,35 +24,35 @@ arm_vals = np.linspace(p_min, p_max, n_arms)
 trueTCEs = []
 
 if dist == "gpd":
-        gen_func = lambda shape, size: genpareto.rvs(shape, 0, 1, size)
-        trueTCEs = tce_gpd(alph, arm_vals)
+    gen_func = lambda shape, size: genpareto.rvs(shape, 0, 1, size)
+    trueTCEs = tce_gpd(alph, arm_vals)
 elif dist == "lnorm":
-        gen_func = lambda shape, size: lognorm.rvs(shape, 0, 1, size)
-        trueTCEs = tce_lnorm(alph, arm_vals)
+    gen_func = lambda shape, size: lognorm.rvs(shape, 0, 1, size)
+    trueTCEs = tce_lnorm(alph, arm_vals)
 elif dist == "weibull":
-        gen_func = lambda shape, size: weibull_min.rvs(shape, 0, 1, size)
-        trueTCEs = tce_weibull(alph, arm_vals)
+    gen_func = lambda shape, size: weibull_min.rvs(shape, 0, 1, size)
+    trueTCEs = tce_weibull(alph, arm_vals)
 
 np.save(os.path.join("data", "bandits", dirname, "tce"), trueTCEs)
 
-n_plays = 5000
+n_plays = 10000
+n_step = 10
+eps_sched = np.linspace(EPS_START, EPS_END, EPS_LEN)
 
 def bandit_one_run(x, tce_func):
     np.random.seed()
     armSelected = np.zeros(n_plays, dtype=int) # arm index selected at each play
     nArmSamples = np.zeros(n_arms, dtype=int) # number of times each arm selected
     armTCEs = np.zeros(n_arms) # TCE estimate for each arm
-    for i in range(n_plays):
-        if i < 1000:
-            eps = 1
-        else:
-            eps = 0.1
+    for i in range(0, n_plays, 10):
+        eps_idx = min(i, EPS_LEN-1)
+        eps = eps_sched[eps_idx]
         if np.random.uniform() <= eps: # pick random arm
             arm = np.random.randint(n_arms)
         else:
             arm  = np.argmin(armTCEs)
         armSelected[i] = arm
-        nArmSamples[arm] += 1
+        nArmSamples[arm] += n_step
         if tce_func == tce_ad:
             armTCEs[arm] =  tce_func(x[arm, :nArmSamples[arm]], alph, tp_init, tp_num, signif, cutoff)
         else:
