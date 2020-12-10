@@ -3,5 +3,3 @@ __pycache__
 slurm*
 data
 plots
-fraction_closer
-find_dists.py
