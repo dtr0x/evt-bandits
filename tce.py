@@ -25,7 +25,7 @@ def tce_ev(x, alph, tp=0.95, cutoff=0.99):
     if shape > cutoff:
         return np.nan
     else:
-        return tce_ev_params(alph, u, shape, scale, tp)    
+        return tce_ev_params(alph, u, shape, scale, tp)
 
 def tce_gpd(alph, shape, scale=1):
     q = genpareto.ppf(alph, shape, loc=0, scale=scale)
@@ -128,7 +128,7 @@ def tce_ad(x, alph, tp_init=0.9, tp_num=40, signif=0.1, cutoff=0.9, stop_rule=fo
                 n_rejected += 1
         except ValueError:
             pass
-    
+
     if len(ad_tests) == 0:
         tce = tce_sa(x, alph)
         if return_thresh:
@@ -140,7 +140,7 @@ def tce_ad(x, alph, tp_init=0.9, tp_num=40, signif=0.1, cutoff=0.9, stop_rule=fo
     pvals = np.asarray(pvals)
 
     stop = stop_rule(pvals, signif)
- 
+
     u, shape, scale, tp = ad_tests[stop, ]
     tce = tce_ev_params(alph, u, shape, scale, tp)
     if return_thresh:
