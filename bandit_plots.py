@@ -1,37 +1,92 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os, sys
+from matplotlib import rcParams
+from matplotlib.lines import Line2D
+from matplotlib.font_manager import FontProperties
+from frechet import Frechet
+from burr import Burr
+from half_t import HalfT
 
-dirname = sys.argv[1]
-vals = np.load(os.path.join("data", "bandits", dirname, "tce.npy"))
-best_arm = np.argmin(vals)
+def error_prob(result, best_arm):
+    n_trials = result.shape[1]
+    return 1 - np.asarray(result == best_arm).sum(axis=1)/n_trials
 
-def percent_best_action(data, best_arm):
-    f = lambda z: np.sum((z == best_arm).astype(int))/len(z)
-    return np.apply_along_axis(f, 0, data)
+if __name__ == '__main__':
+    # Burr distributions
+    c = [0.75, 1, 2, 3, 4]
+    d = [2, 1.5, 1, 0.75, 0.5]
+    params = [(i,j) for i,j in zip(c,d)]
+    burr_dists = [Burr(*p) for p in params]
 
-if __name__ == "__main__":
-    # SA data
-    arrs = []
-    data_path = os.path.join("data", "bandits", dirname, "sa")
-    for file in os.listdir(data_path):
-        arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
-    sa_data = np.vstack(tuple(arrs))
+    # Frechet distributions
+    gamma = [1.25, 1.5, 2, 2.5, 3]
+    frec_dists = [Frechet(p) for p in gamma]
 
-    # EV data
-    arrs = []
-    data_path = os.path.join("data", "bandits", dirname, "ev")
-    for file in os.listdir(data_path):
-        arrs.append(np.load(os.path.join(data_path, file), allow_pickle=True))
-    ev_data = np.vstack(tuple(arrs))
+    # half-t distributions
+    df = [1.25, 1.5, 2, 2.5, 3]
+    t_dists = [HalfT(p) for p in df]
 
-    sa_pba = percent_best_action(sa_data, best_arm)
-    ev_pba = percent_best_action(ev_data, best_arm)
+    # sample sizes to test CVaR estimation
+    budgets = np.arange(5000, 25001, 5000)
 
-    plt.plot(sa_pba, 'b')
-    plt.plot(ev_pba, 'r')
-    plt.xlabel("Timestep")
-    plt.ylabel("Percent Best Action")
-    plt.legend(labels = ["Sample Average", "Extreme Value"])
-    plt.savefig(os.path.join("plots", "bandits", dirname+".png"), bbox_inches="tight")
+    # CVaR level
+    alph = 0.998
+
+    # get bandit experiment results
+    arms_selected = np.load('data/arms_selected.npy')
+    n_trials = 1000
+
+    # get best arms
+    burr_optim = np.argmin([d.cvar(alph) for d in burr_dists])
+    frec_optim = np.argmin([d.cvar(alph) for d in frec_dists])
+    t_optim = np.argmin([d.cvar(alph) for d in t_dists])
+
+    # error probability metrics
+    burr_evt = error_prob(arms_selected[0], burr_optim)
+    burr_sa = error_prob(arms_selected[1], burr_optim)
+    frec_evt = error_prob(arms_selected[2], frec_optim)
+    frec_sa = error_prob(arms_selected[3], frec_optim)
+    t_evt = error_prob(arms_selected[4], t_optim)
+    t_sa = error_prob(arms_selected[5], t_optim)
+
+    plt.style.use('seaborn')
+    plt.rc('axes', titlesize=8)     # fontsize of the axes title
+    plt.rc('axes', labelsize=6)    # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=4)    # fontsize of the tick labels
+    plt.rc('ytick', labelsize=4)    # fontsize of the tick labels
+    plt.rc('legend', fontsize=5)    # fontsize of the tick labels
+    plt.rc('font', family='serif')
+
+    # uncomment this line for Latex rendering
+    #plt.rc('text', usetex=True)
+
+    fig, axs = plt.subplots(1, 3, figsize=(7, 2.5))
+
+    # Burr plots
+    axs[0].plot(budgets, burr_evt, linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
+    axs[0].plot(budgets, burr_sa, linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+    axs[0].set_title('Burr bandit')
+
+    # Frechet plots
+    axs[1].plot(budgets, frec_evt, linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
+    axs[1].plot(budgets, frec_sa, linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+    axs[1].set_title('Frechet bandit')
+
+    # T plots
+    axs[2].plot(budgets, t_evt, linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
+    axs[2].plot(budgets, t_sa, linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+    axs[2].set_title('half-t bandit')
+
+    for i in range(3):
+        axs[i].set_xlabel('budget')
+        axs[i].legend(['EVT', 'SA'])
+        axs[i].set_xticks(budgets)
+        axs[i].ticklabel_format(axis='x', style='sci', scilimits=(0,0))
+
+
+    plt.tight_layout(pad=0.5)
+    axs[0].set_ylabel('probability of error')
+    fig.savefig('plots/bandit_plots.pdf', format='pdf', bbox_inches='tight')
+
+    plt.show()
     plt.clf()

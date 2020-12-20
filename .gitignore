@@ -1,5 +1,6 @@
 __pycache__
 *.pyc
 slurm*
-data
-plots
+test*
+data*
+plots*
