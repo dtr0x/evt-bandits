@@ -35,9 +35,9 @@ def get_means(cvars):
         print(s)
 
 if __name__ == '__main__':
-    lnorm_cvars = np.load('data/lnorm_cvars.npy')[:2]
+    lnorm_cvars = np.load('data/lnorm_cvars.npy')
 
-    weib_cvars = np.load('data/weib_cvars.npy')[:2]
+    weib_cvars = np.load('data/weib_cvars.npy')
 
     # Lognormal distributions
     lnorm_dists = [Lognormal(0, 0.25), Lognormal(0, 0.5), Lognormal(0, 1), Lognormal(1.5)]
@@ -82,19 +82,19 @@ if __name__ == '__main__':
     for i in range(len(lnorm_dists)):
         # lnorm plots
         # RMSE
-        axs[0,i].plot(sampsizes, lnorm_rmse[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[0,i].plot(sampsizes, lnorm_rmse[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[0,i].plot(sampsizes, lnorm_rmse[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[0,i].plot(sampsizes, lnorm_rmse[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
         # Bias
-        axs[1,i].plot(sampsizes, lnorm_bias[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[1,i].plot(sampsizes, lnorm_bias[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[1,i].plot(sampsizes, lnorm_bias[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='red')
+        axs[1,i].plot(sampsizes, lnorm_bias[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
 
         # weibull plots
         # RMSE
-        axs[2,i].plot(sampsizes, weib_rmse[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[2,i].plot(sampsizes, weib_rmse[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[2,i].plot(sampsizes, weib_rmse[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[2,i].plot(sampsizes, weib_rmse[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
         # Bias
-        axs[3,i].plot(sampsizes, weib_bias[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[3,i].plot(sampsizes, weib_bias[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[3,i].plot(sampsizes, weib_bias[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[3,i].plot(sampsizes, weib_bias[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
 
         axs[3,i].set_xlabel('sample size')
 

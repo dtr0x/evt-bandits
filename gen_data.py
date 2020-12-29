@@ -63,7 +63,7 @@ if __name__ == '__main__':
     s = 1000
 
     # generate data
-    np.random.seed(7)
+    np.random.seed(0)
     burr_data = gen_samples(burr_dists, s, n_max)
     frec_data = gen_samples(frec_dists, s, n_max)
     t_data = gen_samples(t_dists, s, n_max)

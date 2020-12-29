@@ -54,7 +54,7 @@ if __name__ == '__main__':
     s = 1000
 
     # generate data
-    np.random.seed(7)
+    np.random.seed(0)
     lnorm_data = gen_samples(lnorm_dists, s, n_max)
     weib_data = gen_samples(weib_dists, s, n_max)
 

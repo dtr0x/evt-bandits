@@ -63,18 +63,18 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(1, 3, figsize=(7, 2.5))
 
     # Burr plots
-    axs[0].plot(budgets, burr_evt, linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-    axs[0].plot(budgets, burr_sa, linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+    axs[0].plot(budgets, burr_evt, linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+    axs[0].plot(budgets, burr_sa, linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
     axs[0].set_title('Burr bandit')
 
     # Frechet plots
-    axs[1].plot(budgets, frec_evt, linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-    axs[1].plot(budgets, frec_sa, linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+    axs[1].plot(budgets, frec_evt, linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+    axs[1].plot(budgets, frec_sa, linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
     axs[1].set_title('Frechet bandit')
 
     # T plots
-    axs[2].plot(budgets, t_evt, linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-    axs[2].plot(budgets, t_sa, linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+    axs[2].plot(budgets, t_evt, linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+    axs[2].plot(budgets, t_sa, linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
     axs[2].set_title('half-t bandit')
 
     for i in range(3):

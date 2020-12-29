@@ -94,27 +94,27 @@ if __name__ == '__main__':
     for i in range(len(burr_dists)):
         # Burr plots
         # RMSE
-        axs[0,i].plot(sampsizes, burr_rmse[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[0,i].plot(sampsizes, burr_rmse[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[0,i].plot(sampsizes, burr_rmse[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[0,i].plot(sampsizes, burr_rmse[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
         # Bias
-        axs[1,i].plot(sampsizes, burr_bias[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[1,i].plot(sampsizes, burr_bias[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[1,i].plot(sampsizes, burr_bias[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[1,i].plot(sampsizes, burr_bias[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
 
         # Frechet plots
         # RMSE
-        axs[2,i].plot(sampsizes, frec_rmse[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[2,i].plot(sampsizes, frec_rmse[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[2,i].plot(sampsizes, frec_rmse[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[2,i].plot(sampsizes, frec_rmse[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
         # Bias
-        axs[3,i].plot(sampsizes, frec_bias[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[3,i].plot(sampsizes, frec_bias[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[3,i].plot(sampsizes, frec_bias[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[3,i].plot(sampsizes, frec_bias[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
 
         # t plots
         # RMSE
-        axs[4,i].plot(sampsizes, t_rmse[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[4,i].plot(sampsizes, t_rmse[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[4,i].plot(sampsizes, t_rmse[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[4,i].plot(sampsizes, t_rmse[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
         # Bias
-        axs[5,i].plot(sampsizes, t_bias[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='darkorange')
-        axs[5,i].plot(sampsizes, t_bias[i,1], linestyle='dashed', linewidth=1, marker='D', markersize=3, color='cornflowerblue')
+        axs[5,i].plot(sampsizes, t_bias[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
+        axs[5,i].plot(sampsizes, t_bias[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
 
         axs[5,i].set_xlabel('sample size')
 
