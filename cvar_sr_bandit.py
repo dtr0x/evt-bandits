@@ -64,8 +64,7 @@ if __name__ == '__main__':
     budgets = np.arange(5000, 25001, 5000)
     n_arms = 5
     # the sample sizes for which we will evaluate the cvar
-    sampsizes = np.array([bandit_samp_sizes(n_arms, b) \
-    for b in budgets]).flatten()
+    sampsizes = np.array([bandit_samp_sizes(n_arms, b) for b in budgets]).flatten()
 
     # load cvar data from files if available
     cvars = load_data(alph, sampsizes)

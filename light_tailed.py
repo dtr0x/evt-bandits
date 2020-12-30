@@ -41,7 +41,7 @@ class Weibull(Distribution):
 
 if __name__ == '__main__':
     # Lognormal distributions
-    lnorm_dists = [Lognormal(0, 0.25), Lognormal(0, 0.5), Lognormal(0, 1), Lognormal(1.5)]
+    lnorm_dists = [Lognormal(0, 0.25), Lognormal(0, 0.5), Lognormal(0, 1), Lognormal(0, 1.5)]
 
     # Weibull distributions
     weib_dists = [Weibull(0.5, 1), Weibull(1, 1), Weibull(2, 1), Weibull(2, 5)]

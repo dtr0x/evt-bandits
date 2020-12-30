@@ -40,7 +40,7 @@ if __name__ == '__main__':
     weib_cvars = np.load('data/weib_cvars.npy')
 
     # Lognormal distributions
-    lnorm_dists = [Lognormal(0, 0.25), Lognormal(0, 0.5), Lognormal(0, 1), Lognormal(1.5)]
+    lnorm_dists = [Lognormal(0, 0.25), Lognormal(0, 0.5), Lognormal(0, 1), Lognormal(0, 1.5)]
 
     # Weibull distributions
     weib_dists = [Weibull(0.5, 1), Weibull(1, 1), Weibull(2, 1), Weibull(2, 5)]
@@ -85,7 +85,7 @@ if __name__ == '__main__':
         axs[0,i].plot(sampsizes, lnorm_rmse[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
         axs[0,i].plot(sampsizes, lnorm_rmse[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
         # Bias
-        axs[1,i].plot(sampsizes, lnorm_bias[i,0], linestyle='solid', linewidth=1, marker='o', markersize=3, color='red')
+        axs[1,i].plot(sampsizes, lnorm_bias[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='red')
         axs[1,i].plot(sampsizes, lnorm_bias[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
 
         # weibull plots
