@@ -7,6 +7,9 @@ class Frechet(Distribution):
         self.gamma = gamma
         self.xi = 1/gamma
 
+    def get_label(self):
+        return "Frechet({})".format(round(self.gamma, 2))
+
     def cdf(self, x):
         gamma = self.gamma
         return np.exp(-x**(-gamma))

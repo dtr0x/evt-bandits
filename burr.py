@@ -8,10 +8,8 @@ class Burr(Distribution):
         self.d = d
         self.xi = 1/c/d
 
-    def U(self, t):
-        c = self.c
-        d = self.d
-        return (t**(1/d) - 1)**(1/c)
+    def get_label(self):
+        return "Burr({}, {})".format(round(self.c, 2), round(self.d, 2))
 
     def cdf(self, x):
         c = self.c

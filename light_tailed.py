@@ -9,6 +9,9 @@ class Lognormal(Distribution):
         self.mu = mu
         self.sigma = sigma
 
+    def get_label(self):
+        return "Lognormal({}, {})".format(round(self.mu, 2), round(self.sigma, 2))
+
     def var(self, alph):
         mu = self.mu
         sigma = self.sigma
@@ -27,6 +30,9 @@ class Weibull(Distribution):
     def __init__(self, shape, scale=1):
         self.shape = shape
         self.scale = scale
+
+    def get_label(self):
+        return "Weibull({}, {})".format(round(self.shape, 2), round(self.scale, 2))
 
     def _gamma_inc(self, a, x):
         return pgamma.sf(x, a) * gamma(a)
