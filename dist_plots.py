@@ -104,6 +104,7 @@ if __name__ == '__main__':
 
     n_classes = 5
     n_dists = 5
+    figsize = (7, 4)
     burr_titles = [d.get_label() for d in burr_dists]
     frec_titles = [d.get_label() for d in frec_dists]
     t_titles = [d.get_label() for d in t_dists]
@@ -112,7 +113,7 @@ if __name__ == '__main__':
 
     # Plot RMSE
 
-    fig, axs = plt.subplots(n_classes, n_dists, sharex=True, figsize=(7, 5))
+    fig, axs = plt.subplots(n_classes, n_dists, sharex=True, figsize=figsize)
 
     for i in range(n_dists):
         # Burr plots
@@ -151,7 +152,7 @@ if __name__ == '__main__':
 
     # Plot Bias
 
-    fig, axs = plt.subplots(n_classes, n_dists, sharex=True, figsize=(7, 5))
+    fig, axs = plt.subplots(n_classes, n_dists, sharex=True, figsize=figsize)
 
     for i in range(n_dists):
         # Burr plots
