@@ -40,10 +40,12 @@ if __name__ == '__main__':
     weib_cvars = np.load('data/weib_cvars.npy')
 
     # Lognormal distributions
-    lnorm_dists = [Lognormal(0, 0.25), Lognormal(0, 0.5), Lognormal(0, 1), Lognormal(0, 1.5)]
+    lnorm_dists = [Lognormal(5, 0.25), Lognormal(4, 0.5), Lognormal(2.5, 0.75),
+        Lognormal(2, 1), Lognormal(1, 1.5)]
 
     # Weibull distributions
-    weib_dists = [Weibull(0.5, 1), Weibull(1, 1), Weibull(2, 1), Weibull(2, 5)]
+    weib_dists = [Weibull(0.5, 1), Weibull(0.75, 2), Weibull(1, 3),
+         Weibull(1.25, 4), Weibull(1.5, 5)]
 
     # sample sizes to test CVaR estimation
     sampsizes = np.linspace(2000, 20000, 10).astype(int)
@@ -74,9 +76,9 @@ if __name__ == '__main__':
     n_dists = len(lnorm_dists)
     fig, axs = plt.subplots(4, n_dists, sharex=True, figsize=(7, 6))
 
-    lnorm_params = [d.sigma for d in lnorm_dists]
+    lnorm_params = [(d.mu, d.sigma) for d in lnorm_dists]
     weib_params = [(d.shape, d.scale) for d in weib_dists]
-    lnorm_titles = ['Lognormal(0, {})'.format(i) for i in lnorm_params]
+    lnorm_titles = ['Lognormal({}, {})'.format(i,j) for i,j in lnorm_params]
     weib_titles = ['Weibull({}, {})'.format(i,j) for i,j in weib_params]
 
     for i in range(len(lnorm_dists)):
@@ -85,7 +87,7 @@ if __name__ == '__main__':
         axs[0,i].plot(sampsizes, lnorm_rmse[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
         axs[0,i].plot(sampsizes, lnorm_rmse[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
         # Bias
-        axs[1,i].plot(sampsizes, lnorm_bias[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='red')
+        axs[1,i].plot(sampsizes, lnorm_bias[i,0], linestyle='--', linewidth=0.5, marker='.', markersize=5, color='r')
         axs[1,i].plot(sampsizes, lnorm_bias[i,1], linestyle=':', linewidth=0.5, marker='.', markersize=5, color='b')
 
         # weibull plots

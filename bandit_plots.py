@@ -27,7 +27,7 @@ if __name__ == '__main__':
     t_dists = [HalfT(p) for p in df]
 
     # sample sizes to test CVaR estimation
-    budgets = np.arange(5000, 25001, 5000)
+    budgets = np.linspace(5000, 25000, 5).astype(int)
 
     # CVaR level
     alph = 0.998

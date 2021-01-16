@@ -41,10 +41,12 @@ class Weibull(Distribution):
 
 if __name__ == '__main__':
     # Lognormal distributions
-    lnorm_dists = [Lognormal(0, 0.25), Lognormal(0, 0.5), Lognormal(0, 1), Lognormal(0, 1.5)]
+    lnorm_dists = [Lognormal(5, 0.25), Lognormal(4, 0.5), Lognormal(2.5, 0.75),
+        Lognormal(2, 1), Lognormal(1, 1.5)]
 
     # Weibull distributions
-    weib_dists = [Weibull(0.5, 1), Weibull(1, 1), Weibull(2, 1), Weibull(2, 5)]
+    weib_dists = [Weibull(0.5, 1), Weibull(0.75, 2), Weibull(1, 3),
+         Weibull(1.25, 4), Weibull(1.5, 5)]
 
     # sample sizes to test CVaR estimation
     sampsizes = np.linspace(2000, 20000, 10).astype(int)
@@ -53,18 +55,19 @@ if __name__ == '__main__':
     # number of independent runs
     s = 1000
 
-    # generate data
-    np.random.seed(0)
-    lnorm_data = gen_samples(lnorm_dists, s, n_max)
-    weib_data = gen_samples(weib_dists, s, n_max)
-
     # CVaR level
     alph = 0.998
 
-    lnorm_result = get_cvars(lnorm_data, alph, sampsizes)
-    weib_result = get_cvars(weib_data, alph, sampsizes)
-
+    # generate data
+    np.random.seed(0)
+    lnorm_data = gen_samples(lnorm_dists, s, n_max)
     np.save('data/lnorm_samples.npy', lnorm_data)
+
+    weib_data = gen_samples(weib_dists, s, n_max)
     np.save('data/weib_samples.npy', weib_data)
+
+    lnorm_result = get_cvars(lnorm_data, alph, sampsizes)
     np.save('data/lnorm_cvars.npy', lnorm_result)
+
+    weib_result = get_cvars(weib_data, alph, sampsizes)
     np.save('data/weib_cvars.npy', weib_result)

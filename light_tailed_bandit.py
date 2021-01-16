@@ -4,31 +4,23 @@ from gen_data import get_cvars
 
 # pre-compute CVaRs for bandit experiments (load data if not present)
 def load_data(alph, sampsizes):
-    # Burr data
-    if os.path.isfile('data/burr_bandit_cvars.npy'):
-        burr_cvars = np.load('data/burr_bandit_cvars.npy')
+    if os.path.isfile('data/lnorm_bandit_cvars.npy'):
+        lnorm_cvars = np.load('data/lnorm_bandit_cvars.npy')
     else:
-        burr_data = np.load('data/burr_samples.npy')
-        burr_cvars = get_cvars(burr_data, alph, sampsizes)
-        np.save('data/burr_bandit_cvars.npy', burr_cvars)
-    # Frechet data
-    if os.path.isfile('data/frec_bandit_cvars.npy'):
-        frec_cvars = np.load('data/frec_bandit_cvars.npy')
-    else:
-        frec_data = np.load('data/frec_samples.npy')
-        frec_cvars = get_cvars(frec_data, alph, sampsizes)
-        np.save('data/frec_bandit_cvars.npy', frec_cvars)
-    # half-t data
-    if os.path.isfile('data/t_bandit_cvars.npy'):
-        t_cvars = np.load('data/t_bandit_cvars.npy')
-    else:
-        t_data = np.load('data/t_samples.npy')
-        t_cvars = get_cvars(t_data, alph, sampsizes)
-        np.save('data/t_bandit_cvars.npy', frec_cvars)
+        lnorm_data = np.load('data/lnorm_samples.npy')
+        lnorm_cvars = get_cvars(lnorm_data, alph, sampsizes)
+        np.save('data/lnorm_bandit_cvars.npy', lnorm_cvars)
 
-    # EVT CVaRs at indices 0, 2, 4
-    # SA CVaRs at indices 1, 3, 5
-    return np.vstack([burr_cvars[:2], frec_cvars[:2], t_cvars[:2]])
+    if os.path.isfile('data/weib_bandit_cvars.npy'):
+        weib_cvars = np.load('data/weib_bandit_cvars.npy')
+    else:
+        weib_data = np.load('data/weib_samples.npy')
+        weib_cvars = get_cvars(weib_data, alph, sampsizes)
+        np.save('data/weib_bandit_cvars.npy', weib_cvars)
+
+    # EVT CVaRs at indices 0, 2
+    # SA CVaRs at indices 1, 3
+    return np.vstack([lnorm_cvars[:2], weib_cvars[:2]])
 
 # argmax resolving ties randonmly
 def argmax(arr, axis=0):
@@ -82,4 +74,4 @@ if __name__ == '__main__':
                 arm_choice = play(trial)
                 arms_selected[k, i, j] = arm_choice
 
-    np.save('data/arms_selected.npy', arms_selected)
+    np.save('data/arms_selected_light.npy', arms_selected)

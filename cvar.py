@@ -86,6 +86,7 @@ def cvar_evt(alph, u, xi, sigma, tp):
     else:
         return u + sigma/(1-xi) * (1+(s**xi - 1)/xi)
 
+
 def cvar_ad(x, alph, tp_start=0.79, tp_end=0.98, tp_num=20, signif=0.1, cutoff=0.9):
     tps = np.linspace(tp_start, tp_end, tp_num)
     ad_tests = []
