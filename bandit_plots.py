@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # uncomment this line for Latex rendering
     #plt.rc('text', usetex=True)
 
-    fig, axs = plt.subplots(1, 5, figsize=(7, 1.5))
+    fig, axs = plt.subplots(1, 5, figsize=(7, 1.25))
 
     # Burr plots
     axs[0].plot(budgets, burr_evt, linestyle='--', linewidth=0.5, marker='.', markersize=4, color='r')
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     plt.tight_layout(pad=0.5)
     axs[0].set_ylabel('probability of error')
-    fig.savefig('plots/bandit_plots.pdf', format='pdf', bbox_inches='tight')
+    fig.savefig('plots/bandits.pdf', format='pdf', bbox_inches='tight')
 
     plt.show()
     plt.clf()
